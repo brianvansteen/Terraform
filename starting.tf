@@ -1,9 +1,16 @@
 variable "myvar" {
-    type = string
-    default = "Hello Terraform"
+  type    = string
+  default = "Hello Terraform"
 }
 
 variable "mymap" {
-    type = may(string)
-    default = "Hello Terraform"
+  type = map(string)
+  default = {
+    mykey = "my value"
+  }
+}
+
+variable "mylist" {
+  type    = list(any)
+  default = [43, 9, 14, 3]
 }
