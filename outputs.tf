@@ -8,3 +8,4 @@ output "public_subnets" {
   value       = aws_instance.web_server.public_dns
 }
 
+# ssh ec2-user@$(terraform output -raw public_ip) -i terraform
