@@ -3,12 +3,11 @@
 #   instance_type = "t2.micro"
 # }
 
-
-data "template_file" "user_data" {
+data "template_file" "user_data" { # data sources defined outside of Terraform
   template = file("./userdata.yaml")
 }
 
-data "aws_vpc" "main" {
+data "aws_vpc" "main" { # data sources defined outside of Terraform
   id = "vpc-da5530bc"
 }
 
@@ -38,7 +37,7 @@ resource "aws_security_group" "allow_http" {
       from_port        = 22
       to_port          = 22
       protocol         = "tcp"
-      cidr_blocks      = ["198.54.132.189/32"]
+      cidr_blocks      = ["198.54.132.0/24"]
       ipv6_cidr_blocks = []
       prefix_list_ids  = []
       security_groups  = ["sg-a77e10db"]
@@ -67,13 +66,13 @@ resource "aws_security_group" "allow_http" {
 
 resource "aws_instance" "web_server" {
   ami                    = "ami-04ff98ccbfa41c9ad"
-  instance_type          = var.instance_type
-  key_name               = aws_key_pair.deployer.key_name
-  vpc_security_group_ids = [aws_security_group.allow_http.id]
-  user_data              = data.template_file.user_data.rendered
+  instance_type          = var.instance_type # named value var.name
+  key_name               = aws_key_pair.deployer.key_name # named value resource.name
+  vpc_security_group_ids = [aws_security_group.allow_http.id] # named value resource.name
+  user_data              = data.template_file.user_data.rendered # named value data.data_type.name
   tags = {
     Name    = "WebServer"
-    Project = "Project-${local.project_name}"
+    Project = "Project-${local.project_name}" # from main.tf locals
   }
   # provisioner "remote-exec" {
   #   inline = [ "echo ${self.private_dns} >> /home/ec2-user/privateDNS.txt" ]
