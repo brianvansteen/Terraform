@@ -17,3 +17,15 @@ module "aws_server" {
 #   description = "Instance private DNS"
 #   value       = module.aws_server.private_dns
 # }
+
+# dynamic blocks
+locals {
+  ingress_rules = [{
+    port        = 443
+    description = "HTTPS 443"
+    },
+    {
+      port        = 80
+      description = "HTTP 80"
+  }]
+}

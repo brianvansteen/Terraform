@@ -5,6 +5,7 @@ terraform {
       version = "~> 5.0"
     }
   }
+  required_version = ">= 1.0.0"
 }
 
 # provider "aws" {
@@ -20,12 +21,12 @@ terraform {
 
 provider "aws" {
   profile = "default"
-  region = "us-east-2"
-  alias = "east"
+  region  = "us-east-2"
+  alias   = "east"
 }
 
 provider "aws" {
   profile = "default"
-  region = "us-west-1"
-  alias = "west"
+  region  = "us-west-1"
+  alias   = "west"
 }

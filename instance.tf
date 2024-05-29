@@ -14,9 +14,9 @@
 #   template = file("./userdata.yaml")
 # }
 
-# data "aws_vpc" "main" { # data sources defined outside of Terraform
-#   id = "vpc-da5530bc"
-# }
+data "aws_vpc" "main" { # data sources defined outside of Terraform
+  id = "vpc-da5530bc"
+}
 
 # resource "aws_key_pair" "deployer" {
 #   key_name   = "deployer_key"
@@ -155,46 +155,46 @@
 # }
 
 data "aws_ami" "east-amazon-linux-2" {
-	provider = aws.east
- 	most_recent = true
-	owners = ["amazon"]
-	filter {
-		name   = "owner-alias"
-		values = ["amazon"]
-	}
-	filter {
-		name   = "name"
-		values = ["amzn2-ami-hvm*"]
-	}
+  provider    = aws.east
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*"]
+  }
 }
 
 data "aws_ami" "west-amazon-linux-2" {
-	provider = aws.west
- 	most_recent = true
-	owners = ["amazon"]
-	filter {
-		name   = "owner-alias"
-		values = ["amazon"]
-	}
-	filter {
-		name   = "name"
-		values = ["amzn2-ami-hvm*"]
-	}
+  provider    = aws.west
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "owner-alias"
+    values = ["amazon"]
+  }
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*"]
+  }
 }
 
 resource "aws_instance" "my_east_server" {
-  ami = "${data.aws_ami.east-amazon-linux-2.id}"
+  ami           = data.aws_ami.east-amazon-linux-2.id
   instance_type = "t2.micro"
-  provider = aws.east
+  provider      = aws.east
   tags = {
     Name = "Server-East"
   }
 }
 
 resource "aws_instance" "my_west_server" {
-  ami = "${data.aws_ami.west-amazon-linux-2.id}"
+  ami           = data.aws_ami.west-amazon-linux-2.id
   instance_type = "t2.micro"
-  provider = aws.west
+  provider      = aws.west
   tags = {
     Name = "Server-East"
   }
@@ -203,3 +203,22 @@ resource "aws_instance" "my_west_server" {
   }
 }
 
+resource "aws_security_group" "inbound" {
+  name   = "security_group"
+  vpc_id = data.aws_vpc.main.id
+  dynamic "ingress" {
+    for_each = local.ingress_rules
+    content {
+      description = ingress.value.description
+      from_port   = ingress.value.port
+      to_port     = ingress.value.port
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+      ipv6_cidr_blocks = []
+      prefix_list_ids = []
+      security_groups = ["sg-a77e10db"]
+      self = false
+    }
+  }
+
+}
